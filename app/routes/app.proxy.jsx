@@ -203,21 +203,25 @@ async function handleCheckUsageAction(
       },
     });
 
-    if (!response.ok) {
-      throw new Error(
-        `Error fetching discount code: ${response.status} - ${response.statusText}`,
-      );
+    if (response.status === 404) {
+      const data = await response.json();
+      return json({ success: true, usage: data.errors });
     }
 
+    if (!response.ok) {
+      const data = await response.json();
+      return json({ success: false, usage: data.errors });
+    }
     const data = await response.json();
     let usage = data?.discount_code?.usage_count;
-    if (usage === 0) {
-      return json({ success: true, usage });
-    } else if (usage === 1) {
-      return json({ success: false, usage });
-    } else {
-      return data;
-    }
+    return json({ success: true, usage });
+    // if (usage === 0) {
+    //   return json({ success: true, usage });
+    // } else if (usage === 1) {
+    //   return json({ success: false, usage });
+    // } else {
+    //   return data;
+    // }
   } catch (error) {
     console.error(error.message);
     return null;

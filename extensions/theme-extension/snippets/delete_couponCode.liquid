@@ -7,14 +7,14 @@
       return false;
     }
 
-  // If this coupon has already been processed, don't process it again
-  if (processedCoupons.has(discountCodeId)) {
-    console.log(`Coupon ${discountCodeId} has already been processed`);
-    return false;
-  }
+    // If this coupon has already been processed, don't process it again
+    if (processedCoupons.has(discountCodeId)) {
+      console.log(`Coupon ${discountCodeId} has already been processed`);
+      return false;
+    }
 
-  // Mark this coupon as processed
-  processedCoupons.add(discountCodeId);
+    // Mark this coupon as processed
+    processedCoupons.add(discountCodeId);
 
     const createTime = new Date(time).getTime();
     const expiryTime = createTime + 30 * 60 * 1000; // 7 minutes
@@ -37,16 +37,18 @@
           } else {
             console.error('Error cancelling redeem:', cancelRedeemData?.Cards[0]?.ResponseMessage);
           }
-      } else if (usageCount === 1) {
-        await updateLocalStorage(discountCodeId, 'Expired: Code Used');
+        } else if (usageCount === 1) {
+          await updateLocalStorage(discountCodeId, 'Expired: Code Used');
           console.log(`Coupon with ID ${discountCodeId} is USED. Not deleted from Shopify.`);
-      } else {
-        console.log(`Coupon with ID ${discountCodeId} something went wrong`);
+        } else if (usageCode === 'Not Found') {
+          await updateLocalStorage(discountCodeId, 'Expired: Code Not Found');
+        } else {
+          console.log(`Coupon with ID ${discountCodeId} something went wrong`);
         }
       } catch (error) {
         console.error('Error in coupon deletion process:', error.message);
       }
-  }, Math.max(0, expiryTime - Date.now()));
+    }, Math.max(0, expiryTime - Date.now()));
 
     return timer;
   }
