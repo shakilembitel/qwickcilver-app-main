@@ -35,6 +35,7 @@
       } else if (result.success === false && result.data.Cards[0].ResponseMessage ===  "Transaction is already cancelled.") {
         apiRawData.transId++;
         localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData));
+        return result.data;
       } else {
         console.error('Error cancelling redeem:', result.data.ResponseMessage);
       }
