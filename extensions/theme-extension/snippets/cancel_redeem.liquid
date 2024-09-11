@@ -1,0 +1,43 @@
+<script>
+  async function cancelRedeem(input) {
+    let apiRawData = JSON.parse(localStorage.getItem('QC-ApiData'));
+    let DateAtServer = await getCurrentDateTime();
+    if (!apiRawData) {
+      throw new Error("Invalid details");
+    }
+    try {
+      const response = await fetch('/apps/discountcode', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'CANCELREDEEM',
+          data: {
+            input: input,
+            DateAtClient: DateAtServer,
+            TransactionId: apiRawData.transId,
+            Authorization: apiRawData.AuthToken,
+          }
+        })
+      });
+  
+      const result = await response.json();
+      if (result.success === true) {
+        apiRawData.transId++;
+        localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData));
+        console.log("Cancel redeem successful:", result.data.ResponseMessage);
+        return result.data;
+      } else if (result.success === false && result.data.Cards[0].ResponseMessage ===  "Transaction is already cancelled.") {
+        apiRawData.transId++;
+        localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData));
+      } else {
+        console.error('Error cancelling redeem:', result.data.ResponseMessage);
+      }
+    } catch (error) {
+      console.error('Error cancelling redeem:', error);
+      alert(`Error: ${error.message}`);
+      throw error;
+    }
+  }
+</script>

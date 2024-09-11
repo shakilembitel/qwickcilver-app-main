@@ -1,0 +1,56 @@
+<script>
+  async function getCurrentDateTime() {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    // Use toISOString() for the time part to ensure ISO format
+    const timeISO = now.toISOString().split('T')[1].substring(0, 8);
+
+    const dateTimeString = `${year}-${month}-${day}T${timeISO}`;
+
+    const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
+    if (!dateTimeRegex.test(dateTimeString)) {
+      console.error('Invalid dateTimeString format:', dateTimeString);
+      return null;
+    }
+
+    return dateTimeString;
+  }
+    const getAuthToken = async (TransactionId) => {
+      let DateAtServer = await getCurrentDateTime();
+      try {
+        const response = await fetch(POST_Authorise, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            DateAtClient: DateAtServer,
+            TransactionId,
+          },
+          body: JSON.stringify({
+            UserName: 'PC.MANAGER',
+            Password: 'WELCOME',
+            TerminalId: 'PC Chandra-Online-POS2',
+          }),
+        });
+    
+        if (!response.ok) {
+          throwErrorMessage(response.status);
+        }
+    
+        const data = await response.json();
+    
+        if (data?.ResponseMessage === "Transaction successful.") {
+          return data;
+        } else {
+          console.error('Transaction was not successful:', data.ResponseMessage);
+          return null;
+        }
+      } catch (error) {
+        console.error('Error fetching auth token:', error);
+        return null;
+      }
+    };
+</script>

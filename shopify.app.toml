@@ -1,0 +1,33 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "2366ec7c938799171e2bafc49dd70abc"
+name = "qc-discount-code"
+handle = "qc-discount-code"
+application_url = "https://dynamics-ratings-ham-eric.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "quickstart-dfc26f2b.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://dynamics-ratings-ham-eric.trycloudflare.com/auth/callback",
+  "https://dynamics-ratings-ham-eric.trycloudflare.com/auth/shopify/callback",
+  "https://dynamics-ratings-ham-eric.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-07"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks"
+
+[pos]
+embedded = false

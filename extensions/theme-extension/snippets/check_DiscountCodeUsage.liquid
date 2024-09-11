@@ -1,0 +1,34 @@
+<script>
+  // Function to get discount code usage count
+  async function checkDiscountCodeUsage(priceRuleId, discountCodeId) {
+    try {
+      const response = await fetch('/apps/discountcode', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'CHECKUSAGE',
+          data: {
+            priceRuleId,
+            discountCodeId,
+          },
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success === true) {
+        console.log(`Discount code usage: ${result.usage}`);
+        return result.usage;
+      } else if (result.success === false) {
+        console.log(`Discount code usage: ${result.usage}`);
+        return result.usage;
+      } else {
+        console.error(result.error);
+      }
+    } catch (error) {
+      console.error('Error checking discount code usage:', error);
+      return null;
+    }
+  }
+</script>
