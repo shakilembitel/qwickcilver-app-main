@@ -7,7 +7,7 @@
     }
     let DateAtServer = await getCurrentDateTime();
     if (!apiRawData) {
-      throw new Error("Invalid details");
+      console.log("Invalid details");
     }
     try {
       const response = await fetch('/apps/discountcode', {

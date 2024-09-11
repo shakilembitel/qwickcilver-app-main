@@ -40,7 +40,7 @@
         console.log("allCouponCodes", allCouponCodes)
         await showCouponOnCart(allCouponCodes);
       } else {
-        throw new Error('Failed to create discount code');
+        console.error('Failed to create discount code');
       }
     } catch (error) {
       console.error('Error creating coupon:', error);

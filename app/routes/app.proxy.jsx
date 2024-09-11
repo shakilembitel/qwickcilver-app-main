@@ -216,7 +216,7 @@ async function handleCheckUsageAction(
     } else if (usage === 1) {
       return json({ success: false, usage });
     } else {
-      return null;
+      return data;
     }
   } catch (error) {
     console.error(error.message);

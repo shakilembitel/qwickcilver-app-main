@@ -9,11 +9,12 @@
         apiResponseMsg.classList.add('response-error')
         apiResponseMsg.innerHTML = `401 Unauthorized: Token validation failed.`;
       case 500:
+        apiResponseMsg.classList.add('response-error')
+        apiResponseMsg.innerHTML = `Internal Server Issue: The server encountered repeated internal errors.`;
         consecutive500Errors++;
         if (consecutive500Errors === 3) {
-          throw new Error('');
           apiResponseMsg.classList.add('response-error')
-          apiResponseMsg.innerHTML = `Internal Server Issue: The server encountered repeated internal errors.`;
+          apiResponseMsg.innerHTML = `Internal Server Issue: Try After Sometime.`;
         } else {
           apiResponseMsg.classList.add('response-error')
           apiResponseMsg.innerHTML = `500 Internal Server Error: A system exception occurred.`;
