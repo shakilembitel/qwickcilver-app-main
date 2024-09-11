@@ -3,7 +3,7 @@
 client_id = "2366ec7c938799171e2bafc49dd70abc"
 name = "qc-discount-code"
 handle = "qc-discount-code"
-application_url = "https://dynamics-ratings-ham-eric.trycloudflare.com"
+application_url = "https://rangers-durable-finite-advertisements.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://dynamics-ratings-ham-eric.trycloudflare.com/auth/callback",
-  "https://dynamics-ratings-ham-eric.trycloudflare.com/auth/shopify/callback",
-  "https://dynamics-ratings-ham-eric.trycloudflare.com/api/auth/callback"
+  "https://rangers-durable-finite-advertisements.trycloudflare.com/auth/callback",
+  "https://rangers-durable-finite-advertisements.trycloudflare.com/auth/shopify/callback",
+  "https://rangers-durable-finite-advertisements.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

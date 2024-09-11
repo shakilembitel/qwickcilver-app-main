@@ -1,4 +1,6 @@
-import { json } from "@shopify/remix-oxygen";
+// import { json } from "@shopify/remix-oxygen";
+import pkg from "@remix-run/server-runtime";
+
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -6,6 +8,7 @@ export async function loader() {
   console.log("loader");
 }
 export async function action({ request, context }) {
+  const { json } = pkg;
   const SHOPIFY_API_SECRET = process.env.SHOPIFY_API_SECRET;
   const SHOPIFY_APP_URL = process.env.SHOPIFY_APP_URL;
   const SHOPIFY_API_VERSION = process.env.SHOPIFY_API_VERSION;
