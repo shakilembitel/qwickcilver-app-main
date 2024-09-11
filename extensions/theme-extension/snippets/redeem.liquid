@@ -64,9 +64,9 @@
       }
   
       const data = await response.json();
+      apiRawData.transId++;
+      localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData));
       if (data.ResponseCode === 0) {
-        apiRawData.transId++;
-        localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData));
         await createDiscountCode(data);
       } else {
         apiResponseMsg.classList.add('response-error')

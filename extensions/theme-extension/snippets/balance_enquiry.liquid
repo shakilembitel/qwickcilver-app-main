@@ -31,7 +31,8 @@
       }
   
       const data = await response.json();
-      
+      apiRawData.transId++;
+      localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData));
       if (data.Cards.length === 0 || data.ResponseMessage !== 'Transaction successful.') {
         apiResponseMsg.classList.add('response-error');
         apiResponseMsg.innerHTML = `${data?.Cards[0]?.ResponseMessage}`
@@ -43,9 +44,6 @@
       apiResponseMsg.classList.remove('response-error')
       apiResponseMsg.classList.add('response-success');
       apiResponseMsg.innerHTML = `Card Balance: ${balance}`;
-  
-      apiRawData.transId++;
-      localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData));
       return data;
   
     } catch (error) {

@@ -27,14 +27,12 @@
       });
   
       const result = await response.json();
+      apiRawData.transId++;
+      localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData));
       if (result.success === true) {
-        apiRawData.transId++;
-        localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData));
         console.log("Cancel redeem successful:", result.data.ResponseMessage);
         return result.data;
       } else if (result.success === false && result.data.Cards[0].ResponseMessage ===  "Transaction is already cancelled.") {
-        apiRawData.transId++;
-        localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData));
         return result.data;
       } else {
         console.error('Error cancelling redeem:', result.data.ResponseMessage);
