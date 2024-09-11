@@ -88,6 +88,10 @@
       window.location.href = "/account/login?show_popup=true";
       return;
     }
+    await addAuthoToken()
+  });
+
+  async function addAuthoToken(){
     const storedData = localStorage.getItem('QC-ApiData');
     if (storedData) {
       const parsedData = JSON.parse(storedData)
@@ -115,8 +119,7 @@
         localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData))
       }
     }
-  });
-
+  }
 
   async function balance_check(e) {
     e.preventDefault();
