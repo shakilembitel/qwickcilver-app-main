@@ -86,6 +86,7 @@ async function handleCreateAction(
   SHOPIFY_API_VERSION,
 ) {
   const { redeemData, customerId } = actionData;
+  const { json } = pkg;
 
   const amount = redeemData?.TotalAmount;
   if (!amount) return null;
@@ -190,6 +191,7 @@ async function handleCheckUsageAction(
   SHOPIFY_API_SECRET,
   SHOPIFY_API_VERSION,
 ) {
+  const { json } = pkg;
   const { priceRuleId, discountCodeId } = actionData;
   const url = `${SHOPIFY_APP_URL}/admin/api/${SHOPIFY_API_VERSION}/price_rules/${priceRuleId}/discount_codes/${discountCodeId}.json`;
   try {
@@ -228,6 +230,7 @@ async function handleDeleteCodeAction(
   SHOPIFY_API_SECRET,
   SHOPIFY_API_VERSION,
 ) {
+  const { json } = pkg;
   const { priceRuleId } = actionData;
   const url = `${SHOPIFY_APP_URL}/admin/api/${SHOPIFY_API_VERSION}/price_rules/${priceRuleId}.json`;
 
@@ -268,6 +271,7 @@ async function handleGetAllCodeAction(
   SHOPIFY_API_SECRET,
   SHOPIFY_API_VERSION,
 ) {
+  const { json } = pkg;
   const { customerId } = actionData;
 
   if (!customerId) {
@@ -392,6 +396,7 @@ async function handleGetAllCodeAction(
 }
 
 async function handleCancelRedeemAction(actionData) {
+  const { json } = pkg;
   const POST_Cancel_Redeem =
     "https://ajf2m0r1na8eau2bn0brcou5h2i0-custuatdev.qwikcilver.com/QwikCilver/XnP/api/v3/gc/transactions/cancel";
   const { input, DateAtClient, TransactionId, Authorization } = actionData;
