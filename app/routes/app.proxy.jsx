@@ -210,7 +210,7 @@ async function handleCheckUsageAction(
 
     if (!response.ok) {
       const data = await response.json();
-      return json({ success: false, usage: data.errors });
+      return json({ success: false, usage: data });
     }
     const data = await response.json();
     let usage = data?.discount_code?.usage_count;

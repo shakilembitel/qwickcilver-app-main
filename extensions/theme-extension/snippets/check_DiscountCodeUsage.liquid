@@ -23,17 +23,6 @@
         console.error(result);
         return null;
       }
-      {% comment %} if (result.success === true && result.usage === 0) {
-        console.log(`Discount code usage: ${result.usage}`);
-        return result.usage;
-      } else if (result.success === false && result.usage > 0) {
-        console.log(`Discount code usage: ${result.usage}`);
-        return result.usage;
-      } else if (result.success === false && result.usage === "Not Found"){
-        return result.usage;
-      }else{
-        console.error(result.error);
-      } {% endcomment %}
     } catch (error) {
       console.error('Error checking discount code usage:', error);
       return null;

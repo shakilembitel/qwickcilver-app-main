@@ -43,8 +43,8 @@
         console.error('Failed to create discount code');
       }
     } catch (error) {
-      console.error('Error creating coupon:', error);
       await cancelRedeem(redeemData);
+      console.error('Error creating coupon:', error);
     }
   }
   
@@ -69,8 +69,21 @@
         </div>
         <p class="offer_code__text"><span>RS. ${amount}</span> rupees off on this QuickCilver Coupon code</p>
         <p>This coupon is valid for only <b>15 min</b></p>
+        <div class="timer_block">
         <p class="timer" data-code_status="${code_status}" data-deletion-attempted="${checkDeletion}"  data-usage_count="${usage_count}" data-create-date="${createdDate}" data-expires-at="${expiresAt}" data-discount-code-id="${discountCodeId}" data-price-rule-id="${priceRuleId}" data-discount-code="${code}">CodeStatus: <span>Loading...</span></p>
-      `;
+        <div id="details">i
+        <div class='coupon-code-details'>
+         <ul>
+          <li>Coupons are valid for 15 minutes only.</li>
+          <li>After 15 minutes, the coupon will expire.</li>
+          <li>Each coupon is applicable for a single use.</li>
+          <li>Copy your coupon code, paste it into the gift card field, and click 'Apply' on the checkout page.</li>
+          <li>If you do not use your coupon within 15 minutes, the coupon's balance will be automatically credited to your gift card for future use after 30 minutes.</li>
+          <li>If your cart total is less than the coupon's value, the remaining balance will be forfeited and cannot be carried over to another purchase.</li>
+        </ul>
+        </div>
+        </div>
+        `;
       return couponElement;
     };
 

@@ -40,7 +40,7 @@
         } else if (usageCount === 1) {
           await updateLocalStorage(discountCodeId, 'Expired: Code Used');
           console.log(`Coupon with ID ${discountCodeId} is USED. Not deleted from Shopify.`);
-        } else if (usageCode === 'Not Found') {
+        } else if (usageCount === "Not Found") {
           await updateLocalStorage(discountCodeId, 'Expired: Code Not Found');
         } else {
           console.log(`Coupon with ID ${discountCodeId} something went wrong`);
