@@ -70,15 +70,17 @@
   }
   
   async function makeRedeemRequest(payload, apiRawData) {
+    const DateAtClient = await getCurrentDateTime();
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 7000) // 7 second timeout
+
   
     try {
       const response = await fetch(POST_Redeem, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          DateAtClient: await getCurrentDateTime(),
+          DateAtClient: DateAtClient,
           TransactionId: apiRawData.transId,
           Authorization: `Bearer ${apiRawData.AuthToken}`,
         },
