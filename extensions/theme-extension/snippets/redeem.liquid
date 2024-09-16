@@ -1,43 +1,51 @@
 <script>
 
   async function generateRandomKey(length = 8) {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let randomKey = '';
-    
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let randomKey = ''
+  
     for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * characters.length);
-      randomKey += characters[randomIndex];
+      const randomIndex = Math.floor(Math.random() * characters.length)
+      randomKey += characters[randomIndex]
     }
-    
-    return randomKey;
+  
+    return randomKey
   }
-
+  
+  let retryPayload = null
+  let retryApiRawData = null
+  
   async function redeem() {
-    const cardNumber = document.getElementById('gift_card_number').value.replace(/\D/g, '');
-    const cardPin = document.getElementById('gift_card_pin').value.replace(/\D/g, '');
-    const amount = parseInt(document.getElementById('gc_amount').value.trim()) || 0;
-
-    let DateAtServer = await getCurrentDateTime();
+    const cardNumber = document
+      .getElementById('gift_card_number')
+      .value.replace(/\D/g, '')
+    const cardPin = document
+      .getElementById('gift_card_pin')
+      .value.replace(/\D/g, '')
+    const amount =
+      parseInt(document.getElementById('gc_amount').value.trim()) || 0
   
     if (!validateCardDetails(cardNumber, cardPin)) {
-      applyRedeemButton.disabled = false;
-      return false;
+      applyRedeemButton.disabled = false
+      return false
     }
-    if(amount === 0) {
-      apiResponseMsg.classList.add('response-error');
-      apiResponseMsg.innerHTML = 'Please enter a valid redeem amount.';
-      applyRedeemButton.disabled = false;
-      return false;
+    if (amount === 0) {
+      apiResponseMsg.classList.add('response-error')
+      apiResponseMsg.innerHTML = 'Please enter a valid redeem amount.'
+      applyRedeemButton.disabled = false
+      return false
     }
-    const { totalPrice } = await cartData();
-    let cartValue = parseInt(totalPrice / 100);  
+    const { totalPrice } = await cartData()
+    let cartValue = parseInt(totalPrice / 100)
+  
     try {
-      let apiRawData = JSON.parse(localStorage.getItem('QC-ApiData'));
-      let IdempotencyKey = await generateRandomKey();
+      let apiRawData = JSON.parse(localStorage.getItem('QC-ApiData'))
+      let IdempotencyKey = await generateRandomKey()
   
       const payload = {
         TransactionModeId: '0',
-        TransactionTypeId: "302",
+        TransactionTypeId: '302',
         IdempotencyKey: IdempotencyKey,
         InvoiceNumber: `PC-${apiRawData.transId}`,
         BillAmount: cartValue,
@@ -45,41 +53,105 @@
         InputType: '1',
         NumberOfCards: '1',
         Cards: [{ CardNumber: cardNumber, CardPin: cardPin, Amount: amount }],
-      };
+      }
   
+      retryPayload = payload
+      retryApiRawData = apiRawData
+  
+      const result = await makeRedeemRequest(payload, apiRawData)
+      handleRedeemResult(result, apiRawData)
+    } catch (error) {
+      if (error.message === 'Request timed out') {
+        showRetryPopup()
+      } else {
+        displayError('Service Unavailable. Please try again later')
+      }
+    }
+  }
+  
+  async function makeRedeemRequest(payload, apiRawData) {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 7000) // 7 second timeout
+  
+    try {
       const response = await fetch(POST_Redeem, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          DateAtClient: DateAtServer,
+          DateAtClient: await getCurrentDateTime(),
           TransactionId: apiRawData.transId,
           Authorization: `Bearer ${apiRawData.AuthToken}`,
         },
         body: JSON.stringify(payload),
-      });
+        signal: controller.signal,
+      })
+      console.log('makeRedeemRequest response', response.JSON())
   
-      if (response.status !== 200) {
-        throwErrorMessage(response.status)
-        return false
+      clearTimeout(timeoutId)
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
   
-      const data = await response.json();
-      apiRawData.transId++;
-      localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData));
-      if (data.ResponseCode === 0) {
-        await createDiscountCode(data);
-      } else {
-        apiResponseMsg.classList.add('response-error')
-        apiResponseMsg.innerHTML = `${data.Cards[0].ResponseMessage}`;
-        applyRedeemButton.disabled = false;
-        return false;
-      }
-  
+      return await response.json()
     } catch (error) {
-      apiResponseMsg.classList.add('response-error');
-      apiResponseMsg.innerHTML = `Service Unavailable. Please try after sometime`;
-      applyRedeemButton.disabled = false;
-      return false;
+      if (error.name === 'AbortError') {
+        throw new Error('Request timed out')
+      }
+      throw error
     }
+  }
+  
+  function handleRedeemResult(result, apiRawData) {
+    apiRawData.transId++
+    localStorage.setItem('QC-ApiData', JSON.stringify(apiRawData))
+  
+    if (result.ResponseCode === 0) {
+      createDiscountCode(result)
+    } else {
+      displayError(result.Cards[0].ResponseMessage)
+    }
+  }
+  
+  async function showRetryPopup() {
+    closeModal();
+    const popup = document.createElement('div')
+    popup.innerHTML = `
+      <div class="retry-popup">
+        <div class="loader">Loading...</div>
+      </div>
+    `
+    document.body.appendChild(popup)
+     await retryRedeem()
+  }
+  
+  async function retryRedeem() {
+    let retryCount = 0;
+    
+    try {
+      if (retryCount < 1 ) {
+        retryCount++
+        const result = await makeRedeemRequest(retryPayload, retryApiRawData)
+        handleRedeemResult(result, retryApiRawData)
+        document.querySelector('.retry-popup').remove()
+      }
+    } catch (error) {
+      if (error.message === 'Request timed out') {
+        // If the retry also times out, call the reverse redeem API
+        document.querySelector('.retry-popup').remove()
+        await reverseRedeem(retryPayload, retryApiRawData)
+      } else {
+        displayError('Retry failed. Please try again later.')
+      }
+    } 
+  }
+  
+  
+  
+  function displayError(message) {
+    const apiResponseMsg = document.getElementById('apiResponseMsg')
+    apiResponseMsg.classList.add('response-error')
+    apiResponseMsg.innerHTML = message
+    document.getElementById('applyRedeemButton').disabled = false
   }
 </script>
