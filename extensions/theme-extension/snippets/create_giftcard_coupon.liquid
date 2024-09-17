@@ -209,6 +209,7 @@
   
     details?.forEach((detail) => {
       detail.addEventListener('click', (event) => {
+        event.preventDefault();
         event.stopPropagation();
         const firstChild = event.currentTarget.firstElementChild;
         const isActive = firstChild.classList.contains('active');
@@ -224,6 +225,7 @@
     closeDetails?.forEach((e) => {
       e.addEventListener('click', (event) => {
         event.stopPropagation();
+        event.preventDefault();
         const parentElement = event.currentTarget.parentElement;
         parentElement.classList.remove('active');
       });
@@ -232,6 +234,7 @@
     // Add click event listener to the document
     document.addEventListener('click', (event) => {
       if (!event.target.closest('.details') && (!event.target.closest('.coupon-code-details'))) {
+        event.preventDefault();
         closeAllDetails();
       }
     });
