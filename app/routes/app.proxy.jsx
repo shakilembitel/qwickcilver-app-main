@@ -70,6 +70,8 @@ export async function action({ request, context }) {
         );
       case "CANCELREDEEM":
         return await handleCancelRedeemAction(actionData);
+      case "REVERSEREDEEM":
+        return await handleReverseRedeemAction(actionData);
       default:
         return json({ error: "Invalid action type" }, { status: 400 });
     }
@@ -509,6 +511,50 @@ async function handleCancelRedeemAction(actionData) {
     }
   } catch (error) {
     console.error("Error cancel_redeem:", error);
-    alert(`Error: ${error.message}`);
+  }
+}
+
+async function handleReverseRedeemAction(actionData) {
+  const { json } = pkg;
+  const POST_Reverse_Redeem =
+    "https://ajf2m0r1na8eau2bn0brcou5h2i0-custuatdev.qwikcilver.com/QwikCilver/XnP/api/v3/gc/transactions/reverse";
+  const { payload, apiRawData, DateAtClient } = actionData;
+
+  try {
+    const response = await fetch(POST_Reverse_Redeem, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        DateAtClient: DateAtClient,
+        TransactionId: apiRawData.transId,
+        Authorization: `Bearer ${apiRawData.AuthToken}`,
+      },
+      body: JSON.stringify({
+        TransactionModeId: "0",
+        TransactionTypeId: "302",
+        IdempotencyKey: payload.IdempotencyKey,
+        InvoiceNumber: payload.InvoiceNumber,
+        BillAmount: payload.BillAmount,
+        Notes: payload.Notes,
+        InputType: "1",
+        NumberOfCards: "1",
+        Cards: [
+          {
+            CardNumber: payload.Cards[0].CardNumber,
+            CardPin: payload.Cards[0].CardPin,
+            Amount: payload.Cards[0].Amount,
+          },
+        ],
+      }),
+    });
+
+    const data = await response.json();
+    if (data.ResponseCode === 0) {
+      return json({ success: true, data });
+    } else {
+      return json({ success: false, data });
+    }
+  } catch (error) {
+    console.error("Error Reverse_redeem:", error);
   }
 }

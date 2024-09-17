@@ -71,8 +71,9 @@
         <p>This coupon is valid for only <b>15 min</b></p>
         <div class="timer_block">
         <p class="timer" data-code_status="${code_status}" data-deletion-attempted="${checkDeletion}"  data-usage_count="${usage_count}" data-create-date="${createdDate}" data-expires-at="${expiresAt}" data-discount-code-id="${discountCodeId}" data-price-rule-id="${priceRuleId}" data-discount-code="${code}">CodeStatus: <span>Loading...</span></p>
-        <div id="details">i
+        <div class="details">i
         <div class='coupon-code-details thin-scroll'>
+        <button class="close-details" aria-label="Close">X</button>
          <ul>
           <li>Coupons are valid for 15 minutes only.</li>
           <li>After 15 minutes, the coupon will expire.</li>
@@ -114,6 +115,7 @@
 
     await initializeTimers();
     initializeCopyButtons();
+    couponsDetails();
   }
 
   async function initializeTimers() {
@@ -194,5 +196,45 @@
     document.body.removeChild(tempInput);
   }
 
+  function couponsDetails() {
+    const details = document.querySelectorAll(".details");
+    const closeDetails = document.querySelectorAll(".close-details");
+  
+    function closeAllDetails() {
+      details.forEach((detail) => {
+        const firstChild = detail.firstElementChild;
+        firstChild.classList.remove('active');
+      });
+    }
+  
+    details?.forEach((detail) => {
+      detail.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const firstChild = event.currentTarget.firstElementChild;
+        const isActive = firstChild.classList.contains('active');
+  
+        closeAllDetails();
+  
+        if (!isActive) {
+          firstChild.classList.add('active');
+        }
+      });
+    });
+  
+    closeDetails?.forEach((e) => {
+      e.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const parentElement = event.currentTarget.parentElement;
+        parentElement.classList.remove('active');
+      });
+    });
+  
+    // Add click event listener to the document
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('.details') && (!event.target.closest('.coupon-code-details'))) {
+        closeAllDetails();
+      }
+    });
+  }
 
 </script>
